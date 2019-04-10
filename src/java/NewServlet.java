@@ -12,13 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
 /**
  *
  * @author Asus
  */
-public class login extends HttpServlet {
+public class NewServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,18 +30,17 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-           String fromServer = "";
-           try{
+            String fromServer = "";
+          try{
              Registry registry = LocateRegistry.getRegistry(40000);
              HelloInterFace stub = (HelloInterFace) registry.lookup("Hello");
              fromServer = stub.sayHello("Oishee");
              // System.out.println(fromServer);
         }catch(Exception ex)
         {
-            System.err.println("Eroor");
+            System.err.println("Error");
         }
         response.setContentType("text/html;charset=UTF-8");
-     //   PrintWriter out = response.getWriter();
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
@@ -51,14 +49,10 @@ public class login extends HttpServlet {
             out.println("<title>Servlet NewServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println(fromServer);
+            out.println("<h1>Servlet NewServlet at " + fromServer + "</h1>");
             out.println("</body>");
             out.println("</html>");
-         }
-         // out.println("Hello User");
-         // RequestDispatcher rs = request.getRequestDispatcher("index.html");
-        //  rs.include(request, response);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

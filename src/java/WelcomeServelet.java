@@ -6,19 +6,20 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.sql.Date;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpSession;
+
 /**
  *
  * @author Asus
  */
-public class login extends HttpServlet {
+@WebServlet(urlPatterns = {"/WelcomeServelet"})
+public class WelcomeServelet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,34 +32,52 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-           String fromServer = "";
-           try{
-             Registry registry = LocateRegistry.getRegistry(40000);
-             HelloInterFace stub = (HelloInterFace) registry.lookup("Hello");
-             fromServer = stub.sayHello("Oishee");
-             // System.out.println(fromServer);
-        }catch(Exception ex)
-        {
-            System.err.println("Eroor");
-        }
         response.setContentType("text/html;charset=UTF-8");
-     //   PrintWriter out = response.getWriter();
-        try (PrintWriter out = response.getWriter()) {
+        // Create a session object if it is already not  created.
+        HttpSession session = request.getSession(true);
+
+        // Get session creation time.
+        Date createTime = new Date(session.getCreationTime());
+
+        // Get last access time of this web page.
+        Date lastAccessTime = new Date(session.getLastAccessedTime());
+
+        String title = "Welcome Back to my website";
+        Integer visitCount = new Integer(0);
+        String visitCountKey = new String("visitCount");
+        String userIDKey = new String("userID");
+        String userID = new String("ABCD");
+
+        // Check if this is new comer on your web page.
+        if (session.isNew()) {
+            String site = new String("http://localhost:8080/WebApplication1/index.html");
+
+            response.setStatus(response.SC_MOVED_TEMPORARILY);
+            response.setHeader("Location", site);
+        } else {
+            String site = new String("http://localhost:8080/WebApplication1/home.html");
+
+            response.setStatus(response.SC_MOVED_TEMPORARILY);
+            response.setHeader("Location", site);
+        }
+        session.setAttribute(visitCountKey, visitCount);
+
+        // Set response content type
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+     
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewServlet</title>");            
+            out.println("<title>Servlet WelcomeServelet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println(fromServer);
+            out.println("<h1>Servlet WelcomeServelet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
-         }
-         // out.println("Hello User");
-         // RequestDispatcher rs = request.getRequestDispatcher("index.html");
-        //  rs.include(request, response);
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

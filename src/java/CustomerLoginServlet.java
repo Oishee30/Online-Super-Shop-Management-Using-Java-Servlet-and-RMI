@@ -6,19 +6,23 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.rmi.Naming.list;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.*;
+import java.util.List;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpSession;
+
 /**
  *
  * @author Asus
  */
-public class login extends HttpServlet {
+public class CustomerLoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,34 +35,41 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-           String fromServer = "";
-           try{
-             Registry registry = LocateRegistry.getRegistry(40000);
-             HelloInterFace stub = (HelloInterFace) registry.lookup("Hello");
-             fromServer = stub.sayHello("Oishee");
-             // System.out.println(fromServer);
+        
+        boolean fromServer = false;
+            
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        String email = request.getParameter("name");
+        String password = request.getParameter("password");
+  
+        try{
+            Registry registry = LocateRegistry.getRegistry(40001);
+            CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
+            // Calling the remote method using the obtained object 
+           // list = (List)stub.getCustomer(); 
+          //  fromServer = stub.sayHello("Oishee");
+              fromServer = stub.loginCheck(email, password);
+          
         }catch(Exception ex)
         {
-            System.err.println("Eroor");
+            ex.printStackTrace();
         }
-        response.setContentType("text/html;charset=UTF-8");
-     //   PrintWriter out = response.getWriter();
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet NewServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println(fromServer);
-            out.println("</body>");
-            out.println("</html>");
-         }
-         // out.println("Hello User");
-         // RequestDispatcher rs = request.getRequestDispatcher("index.html");
-        //  rs.include(request, response);
+
+        if(fromServer)
+        {
+            HttpSession session=request.getSession();
+            session.setAttribute("name",email);  
+            RequestDispatcher rs = request.getRequestDispatcher("home.html");
+            rs.forward(request,response);
+        }
+        else{
+            out.print("Wrong User Name Or Password");
+            RequestDispatcher rs = request.getRequestDispatcher("/index.html");
+            rs.include(request,response);            
+        }
+                
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

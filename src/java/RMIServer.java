@@ -18,10 +18,13 @@ public class RMIServer {
         try{
             //Initializing the implementation class
             HelloInterfaceImpl helloInterfaceImpl = new HelloInterfaceImpl();
+            CustomerInerfaceImpl customerInerfaceImpl = new CustomerInerfaceImpl();
+            
             
             //Binding the remote object in the registry
-            Registry registry = LocateRegistry.createRegistry(40000);
-            registry.bind("Hello", (Remote) helloInterfaceImpl);
+            Registry registry = LocateRegistry.createRegistry(40001);
+            //registry.bind("Hello", (Remote) helloInterfaceImpl);
+            registry.bind("Customer", (Remote) customerInerfaceImpl);
             System.err.println("Service ready");
             
         }catch(Exception ex)

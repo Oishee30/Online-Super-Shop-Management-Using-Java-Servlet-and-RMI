@@ -1,0 +1,23 @@
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Asus
+ */
+public interface CustomerInterface extends Remote{
+     public List<Customer> getCustomer() throws RemoteException;
+     public String sayHello(String name)throws RemoteException;
+     public boolean loginCheck(String email,String password)throws RemoteException;
+     public boolean registerCustomer(String name,String email,String password)throws RemoteException;
+     public ArrayList<Product> getProduct() throws RemoteException;
+}

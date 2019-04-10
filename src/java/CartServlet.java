@@ -6,19 +6,17 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.util.Enumeration;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
 /**
  *
  * @author Asus
  */
-public class login extends HttpServlet {
+public class CartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,34 +29,29 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-           String fromServer = "";
-           try{
-             Registry registry = LocateRegistry.getRegistry(40000);
-             HelloInterFace stub = (HelloInterFace) registry.lookup("Hello");
-             fromServer = stub.sayHello("Oishee");
-             // System.out.println(fromServer);
-        }catch(Exception ex)
-        {
-            System.err.println("Eroor");
-        }
-        response.setContentType("text/html;charset=UTF-8");
+      //  response.setContentType("text/html;charset=UTF-8");
+        
+     //   response.setContentType("text/html;charset=UTF-8");
      //   PrintWriter out = response.getWriter();
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet NewServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println(fromServer);
-            out.println("</body>");
-            out.println("</html>");
-         }
-         // out.println("Hello User");
-         // RequestDispatcher rs = request.getRequestDispatcher("index.html");
-        //  rs.include(request, response);
+        String pid = request.getParameter("pid");
+        System.out.println("Parameter = " + pid);
+//        try (PrintWriter out = response.getWriter()) {
+//            /* TODO output your page here. You may use following sample code. */
+//            out.println("<!DOCTYPE html>");
+//            out.println("<html>");
+//            out.println("<head>");
+//            out.println("<title>Servlet CartServlet</title>");            
+//            out.println("</head>");
+//            out.println("<body>");
+////           Enumeration enumeration = request.getParameterNames();
+////        while (enumeration.hasMoreElements()) {
+////            String parameterName = (String) enumeration.nextElement();
+////            out.println("Parameter = " + parameterName);
+////        }
+//  
+//            out.println("</body>");
+//            out.println("</html>");
+//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
