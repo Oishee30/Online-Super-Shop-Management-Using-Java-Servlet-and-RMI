@@ -151,21 +151,95 @@ public class CustomerInerfaceImpl extends UnicastRemoteObject implements Custome
         return list;
     }
     @Override
-      public ArrayList<Product> getCart(int ProductId,String email,String delStatus,String checkOut) throws RemoteException {
-        ArrayList<Product> list = new ArrayList<Product>();
+      public ArrayList<Product> getCart(String email) throws RemoteException {
+     ArrayList<Product> list = new ArrayList<Product>();
         DatabaseHandler d = new DatabaseHandler();
         ResultSet result;
         if (d.setConnection("shopmanagement", "root", "")) {
             System.out.println("Successfully Connected..");
         }
         int invoice = d.getInvoice(email);
-        d.insertData("INSERT INTO cart VALUES(" + email + "," + String.valueOf(ProductId) + "," + "1" + "," + checkOut + "," + String.valueOf(invoice) + ")" );
-        
-        
+        String sql = "SELECT * FROM product INNER JOIN cart ON product.PId = cart.p_id WHERE cart.c_email = '"+email+"' and invoice =" + String.valueOf(invoice); 
+        result = d.getFavProduct(sql);
+        System.out.println(sql);
+        try {
+
+            ArrayList<String> colName = new ArrayList<>();
+
+            for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
+                colName.add(result.getMetaData().getColumnName(i));
+            }
+            int cnt = 0;
+            while (result.next()) {
+                String ss = "", res;
+                Product product = new Product();
+                for (String col : colName) {
+
+                    res = result.getString(col);
+                    ss += " " + res;
+                    System.out.println(col);
+                    switch (col) {
+                        case "PId":
+                            product.setId(Integer.parseInt(res));
+                            System.out.println("Hello : " + res);
+                            break;
+                        case "PName":
+                            product.setName(res);
+                            break;
+                        case "Category":
+                            product.setCategory(res);
+                            break;
+                        case "Quantity":
+                            product.setQuantity(Integer.parseInt(res));
+                            break;
+                        case "Availability":
+                            product.setAvailability(res);
+                            break;
+                        case "Details":
+                            product.setDetails(res);
+                            break;
+                        case "PictureFile":
+                            product.setPicture(res);
+                            System.out.println("Hello : " + res);
+                            break;
+                        case "Price":
+
+                            product.setPrice(res);
+
+                            break;
+                    }
+                    cnt++;
+                }
+                cnt = 0;
+                //    System.out.println("Helo " + ss);
+                list.add(product);
+            }
+            list.stream().forEach((s) -> {
+                System.out.println(s.getId());
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         d.closeDatabase();
         return list;
       }
-      
+    @Override
+      public void addToCart(String email, int pid) throws RemoteException{
+            ArrayList<Product> list = new ArrayList<Product>();
+        DatabaseHandler d = new DatabaseHandler();
+        ResultSet result;
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        int invoice = d.getInvoice(email);
+        d.insertData("INSERT INTO cart VALUES('" + email + "'," + String.valueOf(pid) + "," + "1" + "," + "'false'," + String.valueOf(invoice) + ")" );
+        
+        String s = "INSERT INTO cart VALUES(" + email + "," + String.valueOf(pid) + "," + "1" + "," + "'false','" + String.valueOf(invoice) + "')";
+        System.out.println("I am from add : " + s);
+        d.closeDatabase();
+          
+      }
     @Override
        public void addToFav(int pid, String email) throws RemoteException{
            

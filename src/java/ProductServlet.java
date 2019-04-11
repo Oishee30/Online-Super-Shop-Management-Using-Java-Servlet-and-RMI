@@ -87,7 +87,7 @@ public class ProductServlet extends HttpServlet {
             out.println("</button>");
             out.println("<div class='collapse navbar-collapse offset' id='navbarSupportedContent'>");
             out.println("<ul class='nav navbar-nav menu_nav ml-auto mr-auto'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='index.html'>Home</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='home.html'>Home</a></li>");
             out.println("<li class='nav-item active submenu dropdown'>");
             out.println("<a href='ProductServlet' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
             out.println("aria-expanded='false'>Product</a>");
@@ -130,7 +130,7 @@ public class ProductServlet extends HttpServlet {
             out.println("<h3><a href='shop-item.html'>" + s.getName() + "</a></h3>");
             out.println("<div class='pi-price'>$" + s.getPrice() + "</div>");
             // This will go to cart
-            out.println("<a href='CartServlet?pid="+ String.valueOf(s.getId()) + "' class='btn add2cart'>Add to cart</a>");
+            out.println("<a href='AddToCartServlet?pid="+ String.valueOf(s.getId()) + "' class='btn add2cart'>Add to cart</a>");
             out.println("<a href='FavoriteProduct?pid="+ String.valueOf(s.getId()) + "' class='btn add2cart'>Add to Favorite</a>");
             System.out.println(s.getId());
             out.println("<div class='sticker sticker-new'></div>");

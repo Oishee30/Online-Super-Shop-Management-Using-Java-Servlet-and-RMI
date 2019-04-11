@@ -38,15 +38,15 @@ public class CartServlet extends HttpServlet {
         List<Product> product = new ArrayList<>();
         HttpSession session=request.getSession();
         String user = (String) session.getAttribute("name");
-        try {
+         ArrayList<Product> list = new ArrayList<>();
+        try{
             Registry registry = LocateRegistry.getRegistry(40001);
             CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
-            product = (List) stub.getProduct();
-            System.out.println("Fname: ");
-            for (Product s : product) {
-                System.out.println("Fname: " + s.getPicture());
-            }
-        } catch (Exception ex) {
+            product = stub.getCart(user);  
+           
+          
+        }catch(Exception ex)
+        {
             ex.printStackTrace();
         }
         String pid = request.getParameter("pid");
@@ -106,7 +106,7 @@ public class CartServlet extends HttpServlet {
             out.println("</ul>");
             out.println("<ul class='nav-shop'>");
             out.println("<li class='nav-item'><button><i class='ti-search'></i></button></li>");
-            out.println("<li class='nav-item'><a href = 'CartServlet'> <button><i class='ti-shopping-cart' ></i><span class='nav-shop__circle'>3</span></button></a> </li>");
+    out.println("<li class='nav-item'><a href = 'CartServlet'> <button><i class='ti-shopping-cart' ></i><span class='nav-shop__circle'>3</span></button></a> </li>");
             out.println("<li class='nav-item'><a class='button button-header' href='CustomerLogoutServelet'>Logout</a></li>");
             out.println("</ul>");
             out.println("</div>");

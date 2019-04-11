@@ -89,7 +89,7 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("</button>");
             out.println("<div class='collapse navbar-collapse offset' id='navbarSupportedContent'>");
             out.println("<ul class='nav navbar-nav menu_nav ml-auto mr-auto'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='index.html'>Home</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='home.html'>Home</a></li>");
             out.println("<li class='nav-item active submenu dropdown'>");
             out.println("<a href='ProductServlet' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
             out.println("aria-expanded='false'>Product</a>");

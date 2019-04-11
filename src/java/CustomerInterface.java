@@ -25,11 +25,12 @@ public interface CustomerInterface extends Remote {
 
     public ArrayList<Product> getProduct() throws RemoteException;
     public ArrayList<Product> getProductInfo(int pid) throws RemoteException;
-    public ArrayList<Product> getCart(int ProductId,String email,String delStatus,String Checkout) throws RemoteException;
+    public ArrayList<Product> getCart(String email) throws RemoteException;
     
     public void addToFav(int pid, String email) throws RemoteException;
     public void deleteFromFav(int pid, String email) throws RemoteException;
     public ArrayList<Product>  getFavProduct(String email) throws RemoteException;
     public void addToReview(int pid, String email,String review) throws RemoteException;
     public ArrayList<Review> getReview(int pid) throws RemoteException;
+    public void addToCart(String email, int pid) throws RemoteException;
 }

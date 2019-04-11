@@ -6,10 +6,16 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -31,6 +37,33 @@ public class AddToCartServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
+              
+        HttpSession session = request.getSession(true);
+
+        // Check if this is new comer on your web page.
+        if (session.isNew()) {
+            response.sendRedirect(request.getContextPath() + "/login.html");
+        } 
+        int pid =Integer.parseInt(request.getParameter("pid"));
+        System.out.println("Parameter = " + pid);
+        
+        List<Product> product = new ArrayList<>();
+  //      HttpSession session=request.getSession();
+        String user = (String) request.getSession(false).getAttribute("name");
+        
+        System.out.println("Oishee " + user);
+      //  RequestDispatcher rs = request.getRequestDispatcher("");
+          response.sendRedirect(request.getContextPath() + "/ProductServlet");
+      //  rs.include(request,response);  
+        try {
+            Registry registry = LocateRegistry.getRegistry(40001);
+            CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
+            stub.addToCart(user,pid);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+            
+          
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");

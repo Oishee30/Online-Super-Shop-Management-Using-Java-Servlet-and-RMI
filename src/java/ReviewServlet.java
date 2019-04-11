@@ -35,11 +35,22 @@ public class ReviewServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-                String pid = request.getParameter("pid");
+        
+        HttpSession session = request.getSession(true);
+
+        // Check if this is new comer on your web page.
+        if (session.isNew()) {
+            response.sendRedirect(request.getContextPath() + "/login.html");
+        } else {
+
+            response.sendRedirect(request.getContextPath() + "/home.html");
+
+        }
+        String pid = request.getParameter("pid");
         System.out.println("Parameter = " + pid);
         
         List<Product> product = new ArrayList<>();
-        HttpSession session=request.getSession();
+       // HttpSession session=request.getSession();
         String user = (String) request.getSession(false).getAttribute("name");
         
         System.out.println("Oishee " + user);
