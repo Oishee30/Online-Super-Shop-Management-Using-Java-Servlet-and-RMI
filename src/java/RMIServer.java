@@ -17,7 +17,7 @@ public class RMIServer {
     {
         try{
             //Initializing the implementation class
-            HelloInterfaceImpl helloInterfaceImpl = new HelloInterfaceImpl();
+           // HelloInterfaceImpl helloInterfaceImpl = new HelloInterfaceImpl();
             CustomerInerfaceImpl customerInerfaceImpl = new CustomerInerfaceImpl();
             
             

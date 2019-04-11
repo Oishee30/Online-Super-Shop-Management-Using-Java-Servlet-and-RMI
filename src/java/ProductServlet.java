@@ -89,39 +89,25 @@ public class ProductServlet extends HttpServlet {
             out.println("<ul class='nav navbar-nav menu_nav ml-auto mr-auto'>");
             out.println("<li class='nav-item'><a class='nav-link' href='index.html'>Home</a></li>");
             out.println("<li class='nav-item active submenu dropdown'>");
-            out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Shop</a>");
-            out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='category.html'>Shop Category</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='single-product.html'>Product Details</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='checkout.html'>Product Checkout</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='confirmation.html'>Confirmation</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='cart.html'>Shopping Cart</a></li>");
-            out.println("</ul>");
+            out.println("<a href='ProductServlet' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
+            out.println("aria-expanded='false'>Product</a>");
+       
             out.println("</li>");
             out.println("<li class='nav-item submenu dropdown'>");
             out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Blog</a>");
+            out.println("aria-expanded='false'>My Shop</a>");
             out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='blog.html'>Blog</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='single-blog.html'>Blog Details</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='FavProductViewServlet'>Favorites</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='single-blog.html'>Tracking</a></li>");
             out.println("</ul>");
             out.println("</li>");
-            out.println("<li class='nav-item submenu dropdown'>");
-            out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Pages</a>");
-            out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='login.html'>Login</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='register.html'>Register</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='tracking-order.html'>Tracking</a></li>");
-            out.println("</ul>");
-            out.println("</li>");
+            
             out.println("<li class='nav-item'><a class='nav-link' href='contact.html'>Contact</a></li>");
             out.println("</ul>");
             out.println("<ul class='nav-shop'>");
             out.println("<li class='nav-item'><button><i class='ti-search'></i></button></li>");
-            out.println("<li class='nav-item'><button><i class='ti-shopping-cart'></i><span class='nav-shop__circle'>3</span></button> </li>");
-            out.println("<li class='nav-item'><a class='button button-header' href='#'>Buy Now</a></li>");
+    out.println("<li class='nav-item'><a href = 'CartServlet'> <button><i class='ti-shopping-cart' ></i><span class='nav-shop__circle'>3</span></button></a> </li>");
+            out.println("<li class='nav-item'><a class='button button-header' href='CustomerLogoutServelet'>Logout</a></li>");
             out.println("</ul>");
             out.println("</div>");
             out.println("</div>");
@@ -132,19 +118,20 @@ public class ProductServlet extends HttpServlet {
             out.println("<div class='row'>");
             //Adding product one by one
              for (Product s: list)
-            {
-            
+            {           
             out.println("<div class='col-md-4'>");
             out.println("<div class='product-item'>");
             out.println("<div class='pi-img-wrapper'>");
-            out.println("<img src='" +  Paths.get(s.getPicture()) + "' class='img-responsive' height=\"650\" width=\"300\" alt='Berry Lace Dress'>");
+            out.println("<img src='" +  Paths.get(s.getPicture()) + "' class='img-responsive' height=\"300\" width=\"300\" alt='Berry Lace Dress'>");
             out.println("<div>");
-            out.println("<a href='ProductDetailsServlet' class='btn'>View</a>");
+            out.println("<a href='ProductDetailsServlet?vid="+ String.valueOf(s.getId())+"' class='btn'>View</a>");
             out.println("</div>");
             out.println("</div>");
             out.println("<h3><a href='shop-item.html'>" + s.getName() + "</a></h3>");
             out.println("<div class='pi-price'>$" + s.getPrice() + "</div>");
+            // This will go to cart
             out.println("<a href='CartServlet?pid="+ String.valueOf(s.getId()) + "' class='btn add2cart'>Add to cart</a>");
+            out.println("<a href='FavoriteProduct?pid="+ String.valueOf(s.getId()) + "' class='btn add2cart'>Add to Favorite</a>");
             System.out.println(s.getId());
             out.println("<div class='sticker sticker-new'></div>");
             out.println("</div>");

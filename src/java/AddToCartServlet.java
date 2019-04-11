@@ -6,9 +6,6 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Asus
  */
-public class CustomerRegisterServlet extends HttpServlet {
+public class AddToCartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,36 +28,19 @@ public class CustomerRegisterServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean fromServer = false;
-
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        String name = request.getParameter("name");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-
-        try {
-            Registry registry = LocateRegistry.getRegistry(40001);
-            CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
-            // Calling the remote method using the obtained object 
-            // list = (List)stub.getCustomer(); 
-            //  fromServer = stub.sayHello("Oishee");
-            fromServer = stub.registerCustomer(name, email, password);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet AddToCartServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet AddToCartServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-
-        if (fromServer) {
-            out.print("Registration Successful, Login To Proceed");
-            RequestDispatcher rs = request.getRequestDispatcher("/index.html");
-            rs.forward(request, response);
-        } else {
-            out.print("This email is already in use");
-            RequestDispatcher rs = request.getRequestDispatcher("/register.html");
-            rs.include(request, response);
-        }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

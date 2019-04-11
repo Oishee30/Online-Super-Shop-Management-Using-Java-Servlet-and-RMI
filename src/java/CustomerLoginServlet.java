@@ -58,7 +58,7 @@ public class CustomerLoginServlet extends HttpServlet {
 
         if(fromServer)
         {
-            HttpSession session=request.getSession();
+            HttpSession session=request.getSession(true);
             session.setAttribute("name",email);  
             RequestDispatcher rs = request.getRequestDispatcher("home.html");
             rs.forward(request,response);

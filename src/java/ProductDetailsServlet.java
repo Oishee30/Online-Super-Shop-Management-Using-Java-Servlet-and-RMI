@@ -33,19 +33,23 @@ public class ProductDetailsServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        String pid = request.getParameter("vid");
+        System.out.println("Parameter = " + pid);
         List<Product> list = new ArrayList<>();
-        try{
+        List<Review> review = new ArrayList<>();
+        Product s = null;
+        try {
             Registry registry = LocateRegistry.getRegistry(40001);
             CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
             // Calling the remote method using the obtained object 
-             list = (List)stub.getProduct(); 
-          //  fromServer = stub.sayHello("Oishee");
-         //     fromServer = stub.getProduct();
-           System.out.println("Fname: "); 
-           for (Product s: list){ 
-            System.out.println("Fname: " +s.getPicture()); 
-            }  
-           
+            list = (List) stub.getProductInfo(Integer.parseInt(pid));
+            review = (List) stub.getReview(Integer.parseInt(pid));
+            //  fromServer = stub.sayHello("Oishee");
+            //     fromServer = stub.getProduct();
+            System.out.println("Fname: ");
+            s = list.get(0);
+
           
         }catch(Exception ex)
         {
@@ -72,8 +76,7 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<link rel='stylesheet' href='css/style.css'>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<!--================ Start Header Menu Area =================-->");
-            out.println("<header class='header_area'>");
+                 out.println("<header class='header_area'>");
             out.println("<div class='main_menu'>");
             out.println("<nav class='navbar navbar-expand-lg navbar-light'>");
             out.println("<div class='container'>");
@@ -88,39 +91,25 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<ul class='nav navbar-nav menu_nav ml-auto mr-auto'>");
             out.println("<li class='nav-item'><a class='nav-link' href='index.html'>Home</a></li>");
             out.println("<li class='nav-item active submenu dropdown'>");
-            out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Shop</a>");
-            out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='category.html'>Shop Category</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='single-product.html'>Product Details</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='checkout.html'>Product Checkout</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='confirmation.html'>Confirmation</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='cart.html'>Shopping Cart</a></li>");
-            out.println("</ul>");
+            out.println("<a href='ProductServlet' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
+            out.println("aria-expanded='false'>Product</a>");
+       
             out.println("</li>");
             out.println("<li class='nav-item submenu dropdown'>");
             out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Blog</a>");
+            out.println("aria-expanded='false'>My Shop</a>");
             out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='blog.html'>Blog</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='single-blog.html'>Blog Details</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='FavProductViewServlet'>Favorites</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='single-blog.html'>Tracking</a></li>");
             out.println("</ul>");
             out.println("</li>");
-            out.println("<li class='nav-item submenu dropdown'>");
-            out.println("<a href='#' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
-            out.println("aria-expanded='false'>Pages</a>");
-            out.println("<ul class='dropdown-menu'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='login.html'>Login</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='register.html'>Register</a></li>");
-            out.println("<li class='nav-item'><a class='nav-link' href='tracking-order.html'>Tracking</a></li>");
-            out.println("</ul>");
-            out.println("</li>");
+            
             out.println("<li class='nav-item'><a class='nav-link' href='contact.html'>Contact</a></li>");
             out.println("</ul>");
             out.println("<ul class='nav-shop'>");
             out.println("<li class='nav-item'><button><i class='ti-search'></i></button></li>");
-            out.println("<li class='nav-item'><button><i class='ti-shopping-cart'></i><span class='nav-shop__circle'>3</span></button> </li>");
-            out.println("<li class='nav-item'><a class='button button-header' href='#'>Buy Now</a></li>");
+    out.println("<li class='nav-item'><a href = 'CartServlet'> <button><i class='ti-shopping-cart' ></i><span class='nav-shop__circle'>3</span></button></a> </li>");
+            out.println("<li class='nav-item'><a class='button button-header' href='CustomerLogoutServelet'>Logout</a></li>");
             out.println("</ul>");
             out.println("</div>");
             out.println("</div>");
@@ -133,7 +122,7 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("<div class='col-lg-6'>");
             out.println("<div class='owl-carousel owl-theme s_Product_carousel'>");
             out.println("<div class='single-prd-item'>");
-            out.println("<img class='img-fluid' src='img/category/s-p1.jpg' alt=''>");
+            out.println("<img class='img-fluid' src='"+ s.getPicture() + "' alt=''>");
             out.println("</div>");
             out.println("<!-- <div class='single-prd-item'>");
             out.println("<img class='img-fluid' src='img/category/s-p1.jpg' alt=''>");
@@ -146,25 +135,29 @@ public class ProductDetailsServlet extends HttpServlet {
             
             //Product Details
             out.println("<div class='col-lg-5 offset-lg-1'>");
+            for(Product p : list)
+            {
             out.println("<div class='s_product_text'>");
-            out.println("<h3>Faded SkyBlu Denim Jeans</h3>");
-            out.println("<h2>$149.99</h2>");
+            out.println("<h3>"+p.getName()+"</h3>");
+            out.println("<h2>$"+p.getPrice()+"</h2>");
             out.println("<ul class='list'>");
-            out.println("<li><a class='active' href='#'><span>Category</span> : Household</a></li>");
+            out.println("<li><a class='active' href='#'><span>"+ p.getCategory()+"</span>  </a></li>");
             out.println("<li><a href='#'><span>Availibility</span> : In Stock</a></li>");
             out.println("</ul>");
             out.println("<p>Mill Oil is an innovative oil filled radiator with the most modern technology. If you are looking for");
             out.println("something that can make your interior look awesome, and at the same time give you the pleasant warm feeling");
             out.println("during the winter.</p>");
             out.println("<div class='product_count'>");
-            out.println("<label for='qty'>Quantity:</label>");
-            out.println("<button onclick='var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;'");
-            out.println("class='increase items-count' type='button'><i class='ti-angle-left'></i></button>");
-            out.println("<input type='text' name='qty' id='sst' size='2' maxlength='12' value='1' title='Quantity:' class='input-text qty'>");
-            out.println("<button onclick='var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;'");
-            out.println("class='reduced items-count' type='button'><i class='ti-angle-right'></i></button>");
-            out.println("<a class='button primary-btn' href='#'>Add to Cart</a>");
+            out.println("<label for='qty'>Quantity: "+ p.getQuantity()+"</label>");
+            }
+           // out.println("<button onclick='var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;'");
+           // out.println("class='increase items-count' type='button'><i class='ti-angle-left'></i></button>");
+            //out.println("<input type='text' name='qty' id='sst' size='2' maxlength='12' value='1' title='Quantity:' class='input-text qty'>");
+           // out.println("<button onclick='var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;'");
+            //out.println("class='reduced items-count' type='button'><i class='ti-angle-right'></i></button>");
+           // out.println("<a class='button primary-btn' href='#'>Add to Cart</a>");
             out.println("</div>");
+          
             out.println("<div class='card_area d-flex align-items-center'>");
             out.println("<a class='icon_btn' href='#'><i class='lnr lnr lnr-diamond'></i></a>");
             out.println("<a class='icon_btn' href='#'><i class='lnr lnr lnr-heart'></i></a>");
@@ -173,8 +166,10 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("</div>");
             out.println("</div>");
             out.println("</div>");
+            
             out.println("</div>");
             out.println("<!--================End Single Product Area =================-->");
+            
             out.println("");
             out.println("<!--================Product Description Area =================-->");
             out.println("<section class='product_description_area'>");
@@ -207,23 +202,24 @@ public class ProductDetailsServlet extends HttpServlet {
             out.println("</div>");
             out.println("</div>");
             out.println("<div class='review_list'>");
+            for(Review r : review)
+            {
             out.println("<div class='review_item'>");
             out.println("<div class='media'>");
             out.println("");
             out.println("<div class='media-body'>");
-            out.println("<h4>Blake Ruiz</h4>");
+            out.println("<h4>"+r.getUser()+"</h4>");
             out.println("</div>");
             out.println("</div>");
-            out.println("<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et");
-            out.println("dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea");
-            out.println("commodo</p>");
+            out.println("<p>"+r.getReview()+"</p>");
             out.println("</div>");
+        }
             out.println("</div>");
             out.println("</div>");
             out.println("<div class='col-lg-6'>");
             out.println("<div class='review_box'>");
             out.println("<h4>Add a Review</h4>");
-            out.println("<form action='#/' class='form-contact form-review mt-3'>");
+            out.println("<form action='ReviewServlet?pid="+ String.valueOf(s.getId()) + "' method = POST class='form-contact form-review mt-3'>");
             out.println("<div class='form-group'>");
             out.println("<input class='form-control' name='name' type='text' placeholder='Enter your name' required>");
             out.println("</div>");

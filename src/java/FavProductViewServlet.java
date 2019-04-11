@@ -9,8 +9,6 @@ import java.io.PrintWriter;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +19,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author Asus
  */
-public class CartServlet extends HttpServlet {
+public class FavProductViewServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,31 +33,28 @@ public class CartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        List<Product> product = new ArrayList<>();
         HttpSession session=request.getSession();
-        String user = (String) session.getAttribute("name");
-        try {
+        String user = (String) request.getSession(false).getAttribute("name");
+         ArrayList<Product> list = new ArrayList<>();
+        try{
             Registry registry = LocateRegistry.getRegistry(40001);
             CustomerInterface stub = (CustomerInterface) registry.lookup("Customer");
-            product = (List) stub.getProduct();
-            System.out.println("Fname: ");
-            for (Product s : product) {
-                System.out.println("Fname: " + s.getPicture());
-            }
-        } catch (Exception ex) {
+             list = stub.getFavProduct(user);  
+           
+          
+        }catch(Exception ex)
+        {
             ex.printStackTrace();
         }
-        String pid = request.getParameter("pid");
-        System.out.println("Parameter = " + pid);
         try (PrintWriter out = response.getWriter()) {
-            
+            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html lang='en'>");
             out.println("<head>");
             out.println("<meta charset='UTF-8'>");
             out.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
             out.println("<meta http-equiv='X-UA-Compatible' content='ie=edge'>");
-            out.println("<title>Aroma Shop - Cart</title>");
+            out.println("<title>Aroma Shop - Category</title>");
             out.println("<link rel='icon' href='img/Fevicon.png' type='image/png'>");
             out.println("<link rel='stylesheet' href='vendors/bootstrap/bootstrap.min.css'>");
             out.println("<link rel='stylesheet' href='vendors/fontawesome/css/all.min.css'>");
@@ -74,7 +69,7 @@ public class CartServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<!--================ Start Header Menu Area =================-->");
-            out.println("<header class='header_area'>");
+                        out.println("<header class='header_area'>");
             out.println("<div class='main_menu'>");
             out.println("<nav class='navbar navbar-expand-lg navbar-light'>");
             out.println("<div class='container'>");
@@ -87,7 +82,7 @@ public class CartServlet extends HttpServlet {
             out.println("</button>");
             out.println("<div class='collapse navbar-collapse offset' id='navbarSupportedContent'>");
             out.println("<ul class='nav navbar-nav menu_nav ml-auto mr-auto'>");
-            out.println("<li class='nav-item'><a class='nav-link' href='home.html'>Home</a></li>");
+            out.println("<li class='nav-item'><a class='nav-link' href='index.html'>Home</a></li>");
             out.println("<li class='nav-item active submenu dropdown'>");
             out.println("<a href='ProductServlet' class='nav-link dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true'");
             out.println("aria-expanded='false'>Product</a>");
@@ -116,182 +111,200 @@ public class CartServlet extends HttpServlet {
             out.println("</header>");
             out.println("<!--================ End Header Menu Area =================-->");
             out.println("");
-            out.println("<!-- ================ start banner area ================= -->");
-            out.println("<section class='blog-banner-area' id='category'>");
-            out.println("<div class='container h-100'>");
-            out.println("<div class='blog-banner'>");
-            out.println("<div class='text-center'>");
-            out.println("<h1>Shopping Cart</h1>");
-            out.println("<nav aria-label='breadcrumb' class='banner-breadcrumb'>");
-            out.println("<ol class='breadcrumb'>");
-            out.println("<li class='breadcrumb-item'><a href='#'>Home</a></li>");
-            out.println("<li class='breadcrumb-item active' aria-current='page'>Shopping Cart</li>");
-            out.println("</ol>");
-            out.println("</nav>");
-            out.println("</div>");
-            out.println("</div>");
-            out.println("</div>");
-            out.println("</section>");
-            out.println("<!-- ================ end banner area ================= -->");
             out.println("");
             out.println("");
             out.println("");
-            out.println("<!--================Cart Area =================-->");
-            out.println("<section class='cart_area'>");
+            out.println("<!-- ================ category section start ================= -->");
+            out.println("<section class='section-margin--small mb-5'>");
             out.println("<div class='container'>");
-            out.println("<div class='cart_inner'>");
-            out.println("<div class='table-responsive'>");
-            out.println("<table class='table'>");
-            out.println("<thead>");
-            out.println("<tr>");
-            out.println("<th scope='col'>Product</th>");
-            out.println("<th scope='col'>Price</th>");
-            out.println("<th scope='col'>Quantity</th>");
-            out.println("<th scope='col'>Total</th>");
-            out.println("</tr>");
-            out.println("</thead>");
-            out.println("<tbody>");
-            for (Product singleProduct : product)
-            {
-            out.println("<tr>");
-            out.println("<td>");
-            out.println("<div class='media'>");
-            out.println("<div class='d-flex'>");
-            out.println("<img src='"+singleProduct.getPicture()+"' alt=''>");
-            out.println("</div>");
-            out.println("<div class='media-body'>");
-            out.println("<p>"+singleProduct.getName() +"</p>");
-            out.println("</div>");
-            out.println("</div>");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<h5>$"+singleProduct.getPrice()+"</h5>");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<div class='product_count'>");
-            out.println("<input type='text' name='qty' id='"+ String.valueOf(singleProduct.getId()) +"' maxlength='12' value='1' title='Quantity:'");
-            out.println("class='input-text qty'>");
-            out.println("<button onclick=myFunction("+String.valueOf(singleProduct.getId())+")");
-            out.println("class='increase items-count' type='button'><i class='lnr lnr-chevron-up'></i></button>");
-            out.println("<button onclick=myFunction2("+String.valueOf(singleProduct.getId())+")");
-            out.println("class='reduced items-count' type='button'><i class='lnr lnr-chevron-down'></i></button>");
-            out.println("</div>");
-            out.println("</td>");
-            out.println("<td>");
-            int price =Integer.parseInt(singleProduct.getPrice());
-            out.println("<h5>"+ price+"</h5>");
-            out.println("</td>");
-            out.println("</tr>");
-            out.println("<script type=\"text/javascript\">");
-            out.println("function myFunction(str) {");
-            out.println("var result = document.getElementById(str); var sst = result.value; if( !isNaN( sst )) result.value++;return false;}");
-            out.println("function myFunction2(str) {");
-            out.println("var result = document.getElementById(str); var sst = result.value; if( !isNaN( sst ) && sst > 0) result.value--;return false;}");    // out.println("alert('the session did time out, please reconnect');");
-                // out.println("logout();}");
-            out.println("</script>");
-            out.println("</body>");
-            out.println("</html>");
-            }
-            out.println("<tr class='bottom_button'>");
-            out.println("<td>");
-            out.println("<a class='button' href='#'>Update Cart</a>");
-            out.println("</td>");
-            out.println("<td>");
+            out.println("<div class='row'>");
             out.println("");
-            out.println("</td>");
-            out.println("<td>");
+            out.println("<div class='col-xl-9 col-lg-8 col-md-8'>");
+            out.println("<!-- Start Filter Bar -->");
             out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<div class='cupon_text d-flex align-items-center'>");
-            out.println("<input type='text' placeholder='Coupon Code'>");
-            out.println("<a class='primary-btn' href='#'>Apply</a>");
-            out.println("<a class='button' href='#'>Have a Coupon?</a>");
-            out.println("</div>");
-            out.println("</td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<h5>Subtotal</h5>");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<h5>$2160.00</h5>");
-            out.println("</td>");
-            out.println("</tr>");
-            out.println("<tr class='shipping_area'>");
-            out.println("<td class='d-none d-md-block'>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<h5>Shipping</h5>");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<div class='shipping_box'>");
-            out.println("<ul class='list'>");
-            out.println("<li><a href='#'>Flat Rate: $5.00</a></li>");
-            out.println("<li><a href='#'>Free Shipping</a></li>");
-            out.println("<li><a href='#'>Flat Rate: $10.00</a></li>");
-            out.println("<li class='active'><a href='#'>Local Delivery: $2.00</a></li>");
+            out.println("<!-- End Filter Bar -->");
+            out.println("<!-- Start Best Seller -->");
+            out.println("<section class='lattest-product-area pb-40 category-list'>");
+            out.println("<div class='row'>");
+            for (Product s: list){ 
+            out.println("<div class='col-md-6 col-lg-4'>");
+            out.println("<div class='card text-center card-product'>");
+            out.println("<div class='card-product__img'>");
+            out.println("<img class='card-img' src='"+s.getPicture()+"'alt=''>");
+            out.println("<ul class='card-product__imgOverlay'>");
+            out.println("<li><a href = FavDeleteServlet?fid="+ String.valueOf(s.getId())+"><button><i class='ti-remove'>Remove</i></button></a></li>");
+            out.println("<li><button><i class='ti-shopping-cart'></i></button></li>");
+            out.println("<li><button><i class='ti-heart'></i></button></li>");
             out.println("</ul>");
-            out.println("<h6>Calculate Shipping <i class='fa fa-caret-down' aria-hidden='true'></i></h6>");
-            out.println("<select class='shipping_select'>");
-            out.println("<option value='1'>Bangladesh</option>");
-            out.println("<option value='2'>India</option>");
-            out.println("<option value='4'>Pakistan</option>");
-            out.println("</select>");
-            out.println("<select class='shipping_select'>");
-            out.println("<option value='1'>Select a State</option>");
-            out.println("<option value='2'>Select a State</option>");
-            out.println("<option value='4'>Select a State</option>");
-            out.println("</select>");
-            out.println("<input type='text' placeholder='Postcode/Zipcode'>");
-            out.println("<a class='gray_btn' href='#'>Update Details</a>");
             out.println("</div>");
-            out.println("</td>");
-            out.println("</tr>");
-            out.println("<tr class='out_button_area'>");
-            out.println("<td class='d-none-l'>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td class=''>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("");
-            out.println("</td>");
-            out.println("<td>");
-            out.println("<div class='checkout_btn_inner d-flex align-items-center'>");
-            out.println("<a class='gray_btn' href='#'>Continue Shopping</a>");
-            out.println("<a class='primary-btn ml-2' href='#'>Proceed to checkout</a>");
+            out.println("<div class='card-body'>");
+            out.println("<p>"+s.getCategory()+"</p>");
+            out.println("<h4 class='card-product__title'><a href='#'>" +s.getName()+"'</a></h4>");
+            out.println("<p class='card-product__price>$'"+s.getPrice()+"</p>");
             out.println("</div>");
-            out.println("</td>");
-            out.println("</tr>");
-            out.println("</tbody>");
-            out.println("</table>");
+            out.println("</div>");
+            out.println("</div>");
+            }
+            out.println("");
+            out.println("");
+            out.println("</div>");
+            out.println("</section>");
+            out.println("<!-- End Best Seller -->");
             out.println("</div>");
             out.println("</div>");
             out.println("</div>");
             out.println("</section>");
-            out.println("<!--================End Cart Area =================-->");
+            out.println("<!-- ================ category section end ================= -->");
             out.println("");
+            out.println("<!-- ================ top product area start ================= -->");
+            out.println("<section class='related-product-area'>");
+            out.println("<div class='container'>");
+            out.println("<div class='section-intro pb-60px'>");
+            out.println("<p>Popular Item in the market</p>");
+            out.println("<h2>Top <span class='section-intro__style'>Product</span></h2>");
+            out.println("</div>");
+            out.println("<div class='row mt-30'>");
+            out.println("<div class='col-sm-6 col-xl-3 mb-4 mb-xl-0'>");
+            out.println("<div class='single-search-product-wrapper'>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-1.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-2.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-3.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("");
+            out.println("<div class='col-sm-6 col-xl-3 mb-4 mb-xl-0'>");
+            out.println("<div class='single-search-product-wrapper'>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-4.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-5.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-6.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("");
+            out.println("<div class='col-sm-6 col-xl-3 mb-4 mb-xl-0'>");
+            out.println("<div class='single-search-product-wrapper'>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-7.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-8.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-9.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("");
+            out.println("<div class='col-sm-6 col-xl-3 mb-4 mb-xl-0'>");
+            out.println("<div class='single-search-product-wrapper'>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-1.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-2.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("<div class='single-search-product d-flex'>");
+            out.println("<a href='#'><img src='img/product/product-sm-3.png' alt=''></a>");
+            out.println("<div class='desc'>");
+            out.println("<a href='#' class='title'>Gray Coffee Cup</a>");
+            out.println("<div class='price'>$170.00</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</section>");
+            out.println("<!-- ================ top product area end ================= -->");
+            out.println("");
+            out.println("<!-- ================ Subscribe section start ================= -->");
+            out.println("<section class='subscribe-position'>");
+            out.println("<div class='container'>");
+            out.println("<div class='subscribe text-center'>");
+            out.println("<h3 class='subscribe__title'>Get Update From Anywhere</h3>");
+            out.println("<p>Bearing Void gathering light light his eavening unto dont afraid</p>");
+            out.println("<div id='mc_embed_signup'>");
+            out.println("<form target='_blank' action='https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01' method='get' class='subscribe-form form-inline mt-5 pt-1'>");
+            out.println("<div class='form-group ml-sm-auto'>");
+            out.println("<input class='form-control mb-1' type='email' name='EMAIL' placeholder='Enter your email' onfocus='this.placeholder = ''' onblur='this.placeholder = 'Your Email Address '' >");
+            out.println("<div class='info'></div>");
+            out.println("</div>");
+            out.println("<button class='button button-subscribe mr-auto mb-1' type='submit'>Subscribe Now</button>");
+            out.println("<div style='position: absolute; left: -5000px;'>");
+            out.println("<input name='b_36c4fd991d266f23781ded980_aefe40901a' tabindex='-1' value='' type='text'>");
+            out.println("</div>");
+            out.println("");
+            out.println("</form>");
+            out.println("</div>");
+            out.println("");
+            out.println("</div>");
+            out.println("</div>");
+            out.println("</section>");
+            out.println("<!-- ================ Subscribe section end ================= -->");
             out.println("");
             out.println("");
             out.println("<!--================ Start footer Area  =================-->");
             out.println("<footer>");
-            out.println("<div class='footer-area footer-only'>");
+            out.println("<div class='footer-area'>");
             out.println("<div class='container'>");
             out.println("<div class='row section_gap'>");
             out.println("<div class='col-lg-3 col-md-6 col-sm-6'>");
-            out.println("<div class='single-footer-widget tp_widgets '>");
+            out.println("<div class='single-footer-widget tp_widgets'>");
             out.println("<h4 class='footer_title large_title'>Our Mission</h4>");
             out.println("<p>");
             out.println("So seed seed green that winged cattle in. Gathering thing made fly you're no");
@@ -382,17 +395,15 @@ public class CartServlet extends HttpServlet {
             out.println("<script src='vendors/skrollr.min.js'></script>");
             out.println("<script src='vendors/owl-carousel/owl.carousel.min.js'></script>");
             out.println("<script src='vendors/nice-select/jquery.nice-select.min.js'></script>");
+            out.println("<script src='vendors/nouislider/nouislider.min.js'></script>");
             out.println("<script src='vendors/jquery.ajaxchimp.min.js'></script>");
             out.println("<script src='vendors/mail-script.js'></script>");
             out.println("<script src='js/main.js'></script>");
-       
-
+            out.println("</body>");
+            out.println("</html>");
 
         }
-  
-        
-        }
-    
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

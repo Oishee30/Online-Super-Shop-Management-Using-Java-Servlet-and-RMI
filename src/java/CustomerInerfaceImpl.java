@@ -16,49 +16,51 @@ import java.util.logging.Logger;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Asus
  */
-public class CustomerInerfaceImpl extends UnicastRemoteObject implements CustomerInterface{
-    
-    CustomerInerfaceImpl() throws RemoteException{
-        
+public class CustomerInerfaceImpl extends UnicastRemoteObject implements CustomerInterface {
+
+    CustomerInerfaceImpl() throws RemoteException {
+
         super();
     }
-    
+
     @Override
-    public List<Customer> getCustomer() throws RemoteException{
+    public List<Customer> getCustomer() throws RemoteException {
         List<Customer> list;
-        DatabaseHandler d=new DatabaseHandler();
-        if(d.setConnection("shopmanagement","root",""))
-             System.out.println("Successfully Connected..");
-      
-       list = d.testQuery("Customer");
-        for (Customer s: list){ 
-            System.out.println("Fname: " + s.getName()); 
-            System.out.println("Femail: " + s.getEmail()); 
-            System.out.println("Fpassword: " + s.getPassword()); 
-            }  
-           
-       
-       d.closeDatabase();
-       return list;     
+        DatabaseHandler d = new DatabaseHandler();
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+
+        list = d.testQuery("Customer");
+        for (Customer s : list) {
+            System.out.println("Fname: " + s.getName());
+            System.out.println("Femail: " + s.getEmail());
+            System.out.println("Fpassword: " + s.getPassword());
+        }
+
+        d.closeDatabase();
+        return list;
     }
+
     @Override
-    public String sayHello(String name) throws RemoteException{
-        
-        return "hello "  + name;
-        
+    public String sayHello(String name) throws RemoteException {
+
+        return "hello " + name;
+
     }
+
     @Override
-    public boolean loginCheck(String email,String password) throws RemoteException{
+    public boolean loginCheck(String email, String password) throws RemoteException {
 
         boolean result = false;
         DatabaseHandler d = new DatabaseHandler();
-        if(d.setConnection("shopmanagement","root",""))
-            System.out.println("Successfully Connected..");  
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
         try {
             result = d.loginMethod(email, password);
         } catch (SQLException ex) {
@@ -66,39 +68,42 @@ public class CustomerInerfaceImpl extends UnicastRemoteObject implements Custome
         }
         return result;
     }
-        @Override
-    public boolean registerCustomer(String name,String email,String password) throws RemoteException{
+
+    @Override
+    public boolean registerCustomer(String name, String email, String password) throws RemoteException {
 
         boolean result = false;
         DatabaseHandler d = new DatabaseHandler();
-        if(d.setConnection("shopmanagement","root",""))
-            System.out.println("Successfully Connected..");  
-        result = d.registrationMethod(name,email, password);
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        result = d.registrationMethod(name, email, password);
         return result;
     }
-        @Override
-    public ArrayList<Product> getProduct() throws RemoteException{
+
+    @Override
+    public ArrayList<Product> getProduct() throws RemoteException {
         ArrayList<Product> list = new ArrayList<Product>();
-        DatabaseHandler d=new DatabaseHandler();
+        DatabaseHandler d = new DatabaseHandler();
         ResultSet result;
-        if(d.setConnection("shopmanagement","root",""))
-             System.out.println("Successfully Connected..");
-      
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+
         result = d.getProduct("product");
         try {
-            
+
             ArrayList<String> colName = new ArrayList<>();
-            
-            
+
             for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
                 colName.add(result.getMetaData().getColumnName(i));
             }
             int cnt = 0;
             while (result.next()) {
-                String ss = "",res;
+                String ss = "", res;
                 Product product = new Product();
                 for (String col : colName) {
-                    
+
                     res = result.getString(col);
                     ss += " " + res;
                     switch (cnt) {
@@ -126,25 +131,292 @@ public class CustomerInerfaceImpl extends UnicastRemoteObject implements Custome
                             break;
                         default:
                             product.setPrice(res);
-                            
+
                             break;
                     }
                     cnt++;
                 }
                 cnt = 0;
-            //    System.out.println("Helo " + ss);
+                //    System.out.println("Helo " + ss);
                 list.add(product);
             }
             list.stream().forEach((s) -> {
                 System.out.println(s.getId());
             });
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         d.closeDatabase();
-        return list;    
+        return list;
     }
-  
-    
+    @Override
+      public ArrayList<Product> getCart(int ProductId,String email,String delStatus,String checkOut) throws RemoteException {
+        ArrayList<Product> list = new ArrayList<Product>();
+        DatabaseHandler d = new DatabaseHandler();
+        ResultSet result;
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        int invoice = d.getInvoice(email);
+        d.insertData("INSERT INTO cart VALUES(" + email + "," + String.valueOf(ProductId) + "," + "1" + "," + checkOut + "," + String.valueOf(invoice) + ")" );
+        
+        
+        d.closeDatabase();
+        return list;
+      }
+      
+    @Override
+       public void addToFav(int pid, String email) throws RemoteException{
+           
+        DatabaseHandler d = new DatabaseHandler();
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        String sql = "INSERT INTO favorites VALUES("+ String.valueOf(pid) + ",'"+ email +  "')";
+        boolean ans = d.insertData(sql);
+        System.out.println(sql);
+        d.closeDatabase();
+           
+           
+       }
+         @Override
+       public void addToReview(int pid, String email,String review) throws RemoteException{
+           
+        DatabaseHandler d = new DatabaseHandler();
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        String sql = "INSERT INTO review VALUES("+ String.valueOf(pid) + ",'"+ email +  "','" + review + "')";
+        boolean ans = d.insertData(sql);
+        System.out.println(sql);
+        d.closeDatabase();
+           
+           
+       }
+   
+    @Override
+       public ArrayList<Review>getReview(int pid) throws RemoteException{
+           
+        DatabaseHandler d = new DatabaseHandler();
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        String sql = "Select * from review where p_id = " + String.valueOf(pid);
+        ResultSet result = d.getFavProduct(sql);
+        ArrayList<Review> list = new ArrayList<Review>();
+        System.out.println("Iam from review" + sql);
+        try {
+
+            ArrayList<String> colName = new ArrayList<>();
+
+            for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
+                colName.add(result.getMetaData().getColumnName(i));
+            }
+            int cnt = 0;
+            while (result.next()) {
+                String ss = "", res;
+                Review product = new Review();
+                for (String col : colName) {
+
+                    res = result.getString(col);
+                    ss += " " + res;
+                    switch (cnt) {
+                        case 0:
+                            product.setPid(Integer.parseInt(res));
+                            System.out.println("Hello : " + res);
+                            break;
+                        case 1:
+                            product.setUser(res);
+                            System.out.println("Hello : " + res);
+                            break;
+                        default:
+                            product.setReview(res);
+
+                            break;
+                    }
+                    cnt++;
+                }
+                cnt = 0;
+                //    System.out.println("Helo " + ss);
+                list.add(product);
+            }
+        //    list.stream().forEach((s) -> {
+        //        System.out.println(s.getId());
+       //     });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        d.closeDatabase();
+        return list;
+
+           
+           
+       }
+    @Override
+       public ArrayList<Product> getFavProduct(String email) throws RemoteException{
+           
+        ArrayList<Product> list = new ArrayList<Product>();
+        DatabaseHandler d = new DatabaseHandler();
+        ResultSet result;
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+
+        String sql = "SELECT * FROM product INNER JOIN favorites ON product.PId = favorites.p_id WHERE favorites.u_id = '"+email+"'"; 
+        result = d.getFavProduct(sql);
+        System.out.println(sql);
+        try {
+
+            ArrayList<String> colName = new ArrayList<>();
+
+            for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
+                colName.add(result.getMetaData().getColumnName(i));
+            }
+            int cnt = 0;
+            while (result.next()) {
+                String ss = "", res;
+                Product product = new Product();
+                for (String col : colName) {
+
+                    res = result.getString(col);
+                    ss += " " + res;
+                    switch (cnt) {
+                        case 0:
+                            product.setId(Integer.parseInt(res));
+                            System.out.println("Hello : " + res);
+                            break;
+                        case 1:
+                            product.setName(res);
+                            break;
+                        case 2:
+                            product.setCategory(res);
+                            break;
+                        case 3:
+                            product.setQuantity(Integer.parseInt(res));
+                            break;
+                        case 4:
+                            product.setAvailability(res);
+                            break;
+                        case 5:
+                            product.setDetails(res);
+                            break;
+                        case 6:
+                            product.setPicture(res);
+                            break;
+                        default:
+                            product.setPrice(res);
+
+                            break;
+                    }
+                    cnt++;
+                }
+                cnt = 0;
+                //    System.out.println("Helo " + ss);
+                list.add(product);
+            }
+            list.stream().forEach((s) -> {
+                System.out.println(s.getId());
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        d.closeDatabase();
+        return list;
+           
+       }
+           
+    @Override
+       public void deleteFromFav(int pid, String email) throws RemoteException{
+           
+        DatabaseHandler d = new DatabaseHandler();
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+        String sql = "Delete from favorites WHERE p_id = "+ String.valueOf(pid) + " and u_id = '"+ email +  "'";
+        boolean ans = d.insertData(sql);
+        System.out.println(sql);
+        d.closeDatabase();
+           
+           
+       }
+    @Override
+      public ArrayList<Product> getProductInfo(int pid) throws RemoteException{
+          
+          
+                  
+        ArrayList<Product> list = new ArrayList<Product>();
+        DatabaseHandler d = new DatabaseHandler();
+        ResultSet result;
+        if (d.setConnection("shopmanagement", "root", "")) {
+            System.out.println("Successfully Connected..");
+        }
+
+        String sql = "SELECT * FROM product WHERE Pid = " + pid; 
+        result = d.getFavProduct(sql);
+        System.out.println(sql);
+        try {
+
+            ArrayList<String> colName = new ArrayList<>();
+
+            for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
+                colName.add(result.getMetaData().getColumnName(i));
+            }
+            int cnt = 0;
+            while (result.next()) {
+                String ss = "", res;
+                Product product = new Product();
+                for (String col : colName) {
+
+                    res = result.getString(col);
+                    ss += " " + res;
+                    switch (cnt) {
+                        case 0:
+                            product.setId(Integer.parseInt(res));
+                            System.out.println("Hello : " + res);
+                            break;
+                        case 1:
+                            product.setName(res);
+                            break;
+                        case 2:
+                            product.setCategory(res);
+                            break;
+                        case 3:
+                            product.setQuantity(Integer.parseInt(res));
+                            break;
+                        case 4:
+                            product.setAvailability(res);
+                            break;
+                        case 5:
+                            product.setDetails(res);
+                            break;
+                        case 6:
+                            product.setPicture(res);
+                            break;
+                        default:
+                            product.setPrice(res);
+
+                            break;
+                    }
+                    cnt++;
+                }
+                cnt = 0;
+                //    System.out.println("Helo " + ss);
+                list.add(product);
+            }
+            list.stream().forEach((s) -> {
+                System.out.println(s.getId());
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        d.closeDatabase();
+        return list;
+          
+            
+        }
+
 }

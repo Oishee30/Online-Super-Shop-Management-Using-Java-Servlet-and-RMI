@@ -9,15 +9,27 @@ import java.util.List;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Asus
  */
-public interface CustomerInterface extends Remote{
-     public List<Customer> getCustomer() throws RemoteException;
-     public String sayHello(String name)throws RemoteException;
-     public boolean loginCheck(String email,String password)throws RemoteException;
-     public boolean registerCustomer(String name,String email,String password)throws RemoteException;
-     public ArrayList<Product> getProduct() throws RemoteException;
+public interface CustomerInterface extends Remote {
+
+    public List<Customer> getCustomer() throws RemoteException;
+
+    public String sayHello(String name) throws RemoteException;
+
+    public boolean loginCheck(String email, String password) throws RemoteException;
+
+    public boolean registerCustomer(String name, String email, String password) throws RemoteException;
+
+    public ArrayList<Product> getProduct() throws RemoteException;
+    public ArrayList<Product> getProductInfo(int pid) throws RemoteException;
+    public ArrayList<Product> getCart(int ProductId,String email,String delStatus,String Checkout) throws RemoteException;
+    
+    public void addToFav(int pid, String email) throws RemoteException;
+    public void deleteFromFav(int pid, String email) throws RemoteException;
+    public ArrayList<Product>  getFavProduct(String email) throws RemoteException;
+    public void addToReview(int pid, String email,String review) throws RemoteException;
+    public ArrayList<Review> getReview(int pid) throws RemoteException;
 }

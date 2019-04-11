@@ -34,8 +34,8 @@ public class CustomerLogoutServelet extends HttpServlet {
         /* TODO output your page here. You may use following sample code. */
         PrintWriter out = response.getWriter();
 
-        request.getRequestDispatcher("/index.html").include(request, response);
-
+    //    request.getRequestDispatcher("/index.html").include(request, response);
+        response.sendRedirect(request.getContextPath() + "/index.html");
         HttpSession session = request.getSession();
         session.invalidate();
 
